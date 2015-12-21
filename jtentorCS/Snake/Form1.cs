@@ -22,9 +22,10 @@ namespace Snake
         private List<Circle> Snake = new List<Circle>();
         private Circle food = new Circle();
         private bool inPause = false;
+        private bool[,] available = null;
 
 
-        #region Some util properties ------------------------------------------
+        #region Some Useful Properties
 
         /// <summary>
         /// Maxium X position
@@ -114,6 +115,8 @@ namespace Snake
             //Set settings to default
             new Settings();
 
+            available = new bool[maxXPos, maxYPos];
+
             //Create new player object
             Snake.Clear();
             
@@ -123,7 +126,6 @@ namespace Snake
             Snake.Add(head);
 
 
-            lblScore.Text = Settings.Score.ToString();
             GenerateFood();
 
         }
@@ -131,6 +133,9 @@ namespace Snake
         //Place random food object
         private void GenerateFood()
         {
+            lblScore.Text = Settings.Score.ToString();
+            lblScore.Visible = true;
+
             Random random = new Random();
             food = new Circle();
             food.X = random.Next(0, maxXPos);
@@ -165,7 +170,7 @@ namespace Snake
                     if (!inPause)
                     {
                         NextDirection();
-                        SelectPosition();
+                        //SelectPosition();
                         MovePlayer();
                     }
                 }
@@ -428,41 +433,45 @@ namespace Snake
                     switch (Settings.direction)
                     {
                         case Direction.Right:
-                            Snake[i].X++;
+                            Snake[0].X++;
                             break;
                         case Direction.Left:
-                            Snake[i].X--;
+                            Snake[0].X--;
                             break;
                         case Direction.Up:
-                            Snake[i].Y--;
+                            Snake[0].Y--;
                             break;
                         case Direction.Down:
-                            Snake[i].Y++;
+                            Snake[0].Y++;
                             break;
                     }
 
                     //Detect collission with game borders.
-                    if (Snake[i].X < 0 || Snake[i].Y < 0 || Snake[i].X >= maxXPos || Snake[i].Y >= maxYPos)
+                    if (Snake[0].X < 0 || Snake[0].Y < 0 || Snake[0].X >= maxXPos || Snake[0].Y >= maxYPos)
                     {
                         Die();
                     }
 
-
                     //Detect collission with body
                     for (int j = 1; j < Snake.Count; j++)
                     {
-                        if(Snake[i].X == Snake[j].X && Snake[i].Y == Snake[j].Y )
+                        if(Snake[0].X == Snake[j].X && Snake[0].Y == Snake[j].Y )
                         {
                             Die();
                         }
                     }
 
+                    available[Snake[0].X, Snake[0].Y] = true;
+
                     //Detect collision with food piece
-                    if(Snake[0].X == food.X && Snake[0].Y == food.Y)
+                    if (Snake[0].X == food.X && Snake[0].Y == food.Y)
                     {
                         Eat();
                     }
-
+                    else
+                    {
+                        available[Snake[Snake.Count - 1].X, Snake[Snake.Count - 1].Y] = false;
+                    }
                 }
                 else
                 {
@@ -484,7 +493,6 @@ namespace Snake
 
             //Update Score
             Settings.Score += Settings.Points;
-            lblScore.Text = Settings.Score.ToString();
 
             GenerateFood();
         }
@@ -497,31 +505,47 @@ namespace Snake
 
         private void ShowGameBoard(Graphics canvas)
         {
+
+            //for (int i = 0; i < maxXPos; ++i)
+            //{
+            //    for (int j = 0; j < maxYPos; ++j)
+            //    {
+            //        if (available[i, j]) { 
+            //            canvas.FillEllipse(Brushes.White,
+            //                new Rectangle(  1 * Settings.Width,
+            //                                1 * Settings.Height,
+            //                                Settings.Width,
+            //                                Settings.Height));
+            //        }
+            //    }
+            //}
+
             //Draw snake
-            for (int i = 0; i < Snake.Count; i++)
-            {
-                //Draw snake
-                canvas.FillEllipse((i == 0) ? Brushes.Purple : Brushes.Blue,
-                    new Rectangle(Snake[i].X * Settings.Width,
-                                    Snake[i].Y * Settings.Height,
-                                    Settings.Width, 
-                                    Settings.Height));
-            }
+            //for (int i = 0; i < Snake.Count; i++)
+            //{
+            //    //Draw snake
+            //    canvas.FillEllipse((i == 0) ? Brushes.Purple : Brushes.Blue,
+            //        new Rectangle(  Snake[i].X * Settings.Width,
+            //                        Snake[i].Y * Settings.Height,
+            //                        Settings.Width, 
+            //                        Settings.Height));
+            //}
             //Draw Food
-            canvas.FillEllipse(Brushes.Red,
-                new Rectangle(food.X * Settings.Width,
-                                food.Y * Settings.Height,
-                                Settings.Width,
-                                Settings.Height));
+
+            //canvas.FillEllipse(Brushes.Yellow,
+            //    new Rectangle(  food.X * Settings.Width,
+            //                    food.Y * Settings.Height,
+            //                    Settings.Width,
+            //                    Settings.Height));
         }
 
 
 
-        #region Windows Form Methods ------------------------------------------
+        #region Windows Form Methods
 
         private void pbCanvas_Paint(object sender, PaintEventArgs e)
         {
-            ShowGameBoard(e.Graphics);
+            //ShowGameBoard(e.Graphics);
             if (Settings.GameOver)
             {
                 if (!Settings.Win) { 
@@ -561,5 +585,10 @@ namespace Snake
             MessageBox.Show("My Name Is Muhammad Zain Ali,I Am Doing Software Engineering If You need Help Then Contact me\nhttp://social.msdn.microsoft.com/Profile/muhammad_zain_ali\nhttps://www.facebook.com/xain.ch1067", "About Me", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         #endregion
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
