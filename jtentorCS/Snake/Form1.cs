@@ -8,10 +8,11 @@ using System.Text;
 using System.Windows.Forms;
 
 /*
-
-    Refactor
-
-
+    Original from Muhammad Zain Ali
+    https://code.msdn.microsoft.com/windowsapps/MySnakegame-0ced8739
+    http://social.msdn.microsoft.com/Profile/muhammad_zain_ali
+    Apache License Version 2.0, January 2004
+    http://www.apache.org/licenses/ 
 */
 
 namespace Snake
