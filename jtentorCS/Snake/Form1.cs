@@ -131,9 +131,6 @@ namespace Snake
         //Place random food object
         private void GenerateFood()
         {
-            //int maxXPos = pbCanvas.Size.Width / Settings.Width;
-            //int maxYPos = pbCanvas.Size.Height / Settings.Height;
-
             Random random = new Random();
             food = new Circle();
             food.X = random.Next(0, maxXPos);
