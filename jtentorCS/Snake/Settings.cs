@@ -23,7 +23,7 @@
         {
             Width = 64;
             Height = 64;
-            Speed = 64;
+            Speed = 28;
             Score = 0;
             Points = 1;
             GameOver = false;

@@ -51,10 +51,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pbCanvas.BackColor = System.Drawing.Color.Gray;
             this.pbCanvas.Location = new System.Drawing.Point(15, 30);
-            this.pbCanvas.MaximumSize = new System.Drawing.Size(512, 384);
+            this.pbCanvas.MaximumSize = new System.Drawing.Size(512, 454);
             this.pbCanvas.MinimumSize = new System.Drawing.Size(512, 384);
             this.pbCanvas.Name = "pbCanvas";
-            this.pbCanvas.Size = new System.Drawing.Size(512, 384);
+            this.pbCanvas.Size = new System.Drawing.Size(512, 454);
             this.pbCanvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pbCanvas.TabIndex = 0;
             this.pbCanvas.TabStop = false;
@@ -66,7 +66,7 @@
             this.lblScore.BackColor = System.Drawing.Color.Chartreuse;
             this.lblScore.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblScore.ForeColor = System.Drawing.Color.DeepPink;
-            this.lblScore.Location = new System.Drawing.Point(310, 417);
+            this.lblScore.Location = new System.Drawing.Point(376, 484);
             this.lblScore.Name = "lblScore";
             this.lblScore.Size = new System.Drawing.Size(21, 20);
             this.lblScore.TabIndex = 2;
@@ -79,7 +79,7 @@
             this.lblGameOver.BackColor = System.Drawing.Color.Chartreuse;
             this.lblGameOver.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblGameOver.ForeColor = System.Drawing.Color.DeepPink;
-            this.lblGameOver.Location = new System.Drawing.Point(12, 417);
+            this.lblGameOver.Location = new System.Drawing.Point(12, 484);
             this.lblGameOver.Name = "lblGameOver";
             this.lblGameOver.Size = new System.Drawing.Size(135, 20);
             this.lblGameOver.TabIndex = 3;
@@ -151,7 +151,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Chartreuse;
-            this.ClientSize = new System.Drawing.Size(546, 485);
+            this.ClientSize = new System.Drawing.Size(546, 546);
             this.Controls.Add(this.lblGameOver);
             this.Controls.Add(this.lblScore);
             this.Controls.Add(this.pbCanvas);

@@ -24,7 +24,8 @@ namespace Snake
         private List<Circle> Snake = new List<Circle>();
         private Circle food = new Circle();
 
-        private bool inPause = false;
+        private bool inPause = true;
+        private bool inScanningMode = false;
 
         private Queue<Direction> pathData = null;
 
@@ -128,20 +129,21 @@ namespace Snake
             Circle head = new Circle();
             //head.X = 5;
             //head.Y = 5;
-            head.X = 0;
-            head.Y = 0;
+            head.X = 5;
+            head.Y = 5;
 
             Snake.Add(head);
 
             GenerateFood();
 
+            inScanningMode = false;
         }
 
         //Place random food object
         private void GenerateFood()
         {
-            lblScore.Text = "Score: " + Settings.Score.ToString() +
-                "\nRows: " + maxRowPos.ToString() + " Cols: " + maxColPos.ToString();
+            lblScore.Text = "Score: " + Settings.Score.ToString();
+                //"\nRows: " + maxRowPos.ToString() + " Cols: " + maxColPos.ToString();
 
             lblScore.Visible = true;
 
@@ -191,7 +193,14 @@ namespace Snake
                         //NextDirection();
                         //SelectPosition();
 
-                        BruteForceScanning();
+                        if (!inScanningMode)
+                        {
+                            GoHome();
+                        }
+                        else
+                        {
+                            BruteForceScanning();
+                        }
 
                         MovePlayer();
                     }
@@ -427,42 +436,124 @@ namespace Snake
             //pathData = new Direction[maxRowPos * maxColPos];
             pathData = new Queue<Direction>(maxRowPos * maxColPos);
 
-            if (((maxRowPos % 2) == 0) && ((maxColPos % 2) == 0))
+            if ((maxRowPos % 2) == 0)
             {
-                // number of pair rows & pair cols
-
-                //pathData[pathIndex(0, 0)] = Direction.Right;
-                pathData.Enqueue(Direction.Right);
-                for (int i = 0; i < maxRowPos; i += 2)
+                if (maxColPos > 2)
                 {
-                    for (int j = 1; j < maxColPos - 1; ++j)
-                    {
-                        //pathData[pathIndex(i, j)] = Direction.Right;
-                        pathData.Enqueue(Direction.Right);
-                    }
-                    //pathData[pathIndex(i, maxColPos - 1)] = Direction.Down;
-                    pathData.Enqueue(Direction.Down);
+                    // even number of rows and at least three columns
 
-                    for (int j = maxColPos - 1; j > 1; --j)
+                    //pathData[pathIndex(0, 0)] = Direction.Right;
+                    pathData.Enqueue(Direction.Right);
+                    for (int i = 0; i < maxRowPos; i += 2)
                     {
-                        //pathData[pathIndex(i + 1, j)] = Direction.Left;
-                        pathData.Enqueue(Direction.Left);
-                    }
-
-                    if ((i + 1) < (maxRowPos - 1))
-                    {
-                        //pathData[pathIndex(i + 1, 1)] = Direction.Down;
+                        for (int j = 1; j < maxColPos - 1; ++j)
+                        {
+                            //pathData[pathIndex(i, j)] = Direction.Right;
+                            pathData.Enqueue(Direction.Right);
+                        }
+                        //pathData[pathIndex(i, maxColPos - 1)] = Direction.Down;
                         pathData.Enqueue(Direction.Down);
+
+                        for (int j = maxColPos - 1; j > 1; --j)
+                        {
+                            //pathData[pathIndex(i + 1, j)] = Direction.Left;
+                            pathData.Enqueue(Direction.Left);
+                        }
+
+                        if ((i + 1) < (maxRowPos - 1))
+                        {
+                            //pathData[pathIndex(i + 1, 1)] = Direction.Down;
+                            pathData.Enqueue(Direction.Down);
+                        }
+                    }
+
+                    //pathData[pathIndex(maxRowPos - 1, 1)] = Direction.Left;
+                    pathData.Enqueue(Direction.Left);
+
+                    for (int i = maxRowPos - 1; i > 0; --i)
+                    {
+                        //pathData[pathIndex(i, 0)] = Direction.Up;
+                        pathData.Enqueue(Direction.Up);
                     }
                 }
-
-                //pathData[pathIndex(maxRowPos - 1, 1)] = Direction.Left;
-                pathData.Enqueue(Direction.Left);
-
-                for (int i = maxRowPos - 1; i > 0; --i)
+                else
                 {
-                    //pathData[pathIndex(i, 0)] = Direction.Up;
-                    pathData.Enqueue(Direction.Up);
+                    // less than tree columns
+                    Die();
+                }
+            }
+            else
+            {
+                if ((maxColPos % 2) == 0)
+                {
+                    // odd number of rows and even number of cols and at least three columns
+
+                    //pathData[pathIndex(0, 0)] = Direction.Right;
+                    pathData.Enqueue(Direction.Right);
+
+                    for (int j = 1; j < maxColPos - 1; ++j)
+                    {
+                        //pathData[pathIndex(0, j)] = Direction.Right;
+                        pathData.Enqueue(Direction.Right);
+                    }
+                    //pathData[pathIndex(0, maxColPos - 1)] = Direction.Down;
+                    pathData.Enqueue(Direction.Down);
+
+                    bool flag = true;
+                    for (int j = maxColPos - 1; j > 1; --j)
+                    {
+                        if (flag)
+                        { 
+                            pathData.Enqueue(Direction.Down);
+                            pathData.Enqueue(Direction.Left);
+                        }
+                        else
+                        {
+                            pathData.Enqueue(Direction.Up);
+                            pathData.Enqueue(Direction.Left);
+
+                        }
+                        flag = !flag;
+                    }
+                    pathData.Enqueue(Direction.Down);
+                    pathData.Enqueue(Direction.Down);
+
+
+                    //pathData[pathIndex(1, 1)] = Direction.Down;
+                    //pathData.Enqueue(Direction.Down);
+
+                    for (int i = 3; i < maxRowPos; i += 2)
+                    {
+                        for (int j = 1; j < maxColPos - 1; ++j)
+                        {
+                            //pathData[pathIndex(i, j)] = Direction.Right;
+                            pathData.Enqueue(Direction.Right);
+                        }
+                        //pathData[pathIndex(i, maxColPos - 1)] = Direction.Down;
+                        pathData.Enqueue(Direction.Down);
+
+                        for (int j = maxColPos - 1; j > 1; --j)
+                        {
+                            //pathData[pathIndex(i + 1, j)] = Direction.Left;
+                            pathData.Enqueue(Direction.Left);
+                        }
+
+                        if ((i + 1) < (maxRowPos - 1))
+                        {
+                            //pathData[pathIndex(i + 1, 1)] = Direction.Down;
+                            pathData.Enqueue(Direction.Down);
+                        }
+                    }
+
+                    //pathData[pathIndex(maxRowPos - 1, 1)] = Direction.Left;
+                    pathData.Enqueue(Direction.Left);
+
+                    for (int i = maxRowPos - 1; i > 0; --i)
+                    {
+                        //pathData[pathIndex(i, 0)] = Direction.Up;
+                        pathData.Enqueue(Direction.Up);
+                    }
+
                 }
             }
 
@@ -476,6 +567,16 @@ namespace Snake
 
         private void GoHome()
         {
+            Circle head = Snake[0];
+            if ((head.X == 0) && (head.Y == 0))
+            {
+                inScanningMode = true;
+                BruteForceScanning();
+            }
+            else
+            {
+                SelectPosition();
+            }
 
         }
 
