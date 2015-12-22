@@ -19,18 +19,21 @@ namespace Snake
 {
     public partial class Form1 : Form
     {
+        private Random random = new Random();
+
         private List<Circle> Snake = new List<Circle>();
         private Circle food = new Circle();
-        private bool inPause = false;
-        private bool[,] available = null;
 
+        private bool inPause = false;
+
+        private Queue<Direction> pathData = null;
 
         #region Some Useful Properties
 
         /// <summary>
         /// Maxium X position
         /// </summary>
-        private int maxXPos 
+        private int maxColPos 
         {
             get
             {
@@ -40,7 +43,7 @@ namespace Snake
         /// <summary>
         /// Maxium Y position
         /// </summary>
-        private int maxYPos
+        private int maxRowPos
         {
             get
             {
@@ -115,16 +118,20 @@ namespace Snake
             //Set settings to default
             new Settings();
 
-            available = new bool[maxXPos, maxYPos];
+            //available = new bool[maxXPos, maxYPos];
 
             //Create new player object
             Snake.Clear();
-            
-            Circle head = new Circle();
-            head.X = 10;
-            head.Y = 5;
-            Snake.Add(head);
 
+            GeneratePath();
+
+            Circle head = new Circle();
+            //head.X = 5;
+            //head.Y = 5;
+            head.X = 0;
+            head.Y = 0;
+
+            Snake.Add(head);
 
             GenerateFood();
 
@@ -133,13 +140,24 @@ namespace Snake
         //Place random food object
         private void GenerateFood()
         {
-            lblScore.Text = Settings.Score.ToString();
+            lblScore.Text = "Score: " + Settings.Score.ToString() +
+                "\nRows: " + maxRowPos.ToString() + " Cols: " + maxColPos.ToString();
+
             lblScore.Visible = true;
 
-            Random random = new Random();
-            food = new Circle();
-            food.X = random.Next(0, maxXPos);
-            food.Y = random.Next(0, maxYPos);
+            if (Settings.Score >= (maxRowPos * maxColPos))
+            {
+                Die(true);
+                //pbCanvas.Update();
+            }
+            else
+            {
+                do
+                {
+                    food.X = random.Next(0, maxColPos);
+                    food.Y = random.Next(0, maxRowPos);
+                } while (isSnakeCollision(food.X, food.Y, 0));
+            }
         }
 
 
@@ -169,8 +187,12 @@ namespace Snake
                 {
                     if (!inPause)
                     {
-                        NextDirection();
+
+                        //NextDirection();
                         //SelectPosition();
+
+                        BruteForceScanning();
+
                         MovePlayer();
                     }
                 }
@@ -181,16 +203,17 @@ namespace Snake
         }
 
 
+
         private void NextDirection()
         {
             Circle head = Snake[0];
 
             bool canGoLeft, canGoRight, canGoUp, canGoDown;
 
-            canGoLeft = (head.X > 0) && !isBodyCollision(head.X - 1, head.Y);
-            canGoRight = (head.X < maxXPos - 1) && !isBodyCollision(head.X + 1, head.Y);
-            canGoUp = (head.Y > 0) && !isBodyCollision(head.X, head.Y - 1);
-            canGoDown = (head.Y < maxYPos - 1) && !isBodyCollision(head.X, head.Y + 1);
+            canGoLeft = (head.X > 0) && !isSnakeCollision(head.X - 1, head.Y);
+            canGoRight = (head.X < maxColPos - 1) && !isSnakeCollision(head.X + 1, head.Y);
+            canGoUp = (head.Y > 0) && !isSnakeCollision(head.X, head.Y - 1);
+            canGoDown = (head.Y < maxRowPos - 1) && !isSnakeCollision(head.X, head.Y + 1);
 
             // shortest path
             if (head.X < food.X)
@@ -326,10 +349,10 @@ namespace Snake
         {
 
             bool canGoLeft, canGoRight, canGoUp, canGoDown;
-            canGoLeft = (Snake[0].X > 0) && !isBodyCollision(Snake[0].X - 1, Snake[0].Y);
-            canGoRight = (Snake[0].X < maxXPos - 1) && !isBodyCollision(Snake[0].X + 1, Snake[0].Y);
-            canGoUp = (Snake[0].Y > 0) && !isBodyCollision(Snake[0].X, Snake[0].Y - 1);
-            canGoDown = (Snake[0].Y < maxYPos - 1) && !isBodyCollision(Snake[0].X, Snake[0].Y + 1);
+            canGoLeft = (Snake[0].X > 0) && !isSnakeCollision(Snake[0].X - 1, Snake[0].Y);
+            canGoRight = (Snake[0].X < maxColPos - 1) && !isSnakeCollision(Snake[0].X + 1, Snake[0].Y);
+            canGoUp = (Snake[0].Y > 0) && !isSnakeCollision(Snake[0].X, Snake[0].Y - 1);
+            canGoDown = (Snake[0].Y < maxRowPos - 1) && !isSnakeCollision(Snake[0].X, Snake[0].Y + 1);
 
             if (nowGoLeft && !canGoLeft)
             {
@@ -398,6 +421,64 @@ namespace Snake
 
         }
 
+
+        private void GeneratePath()
+        {
+            //pathData = new Direction[maxRowPos * maxColPos];
+            pathData = new Queue<Direction>(maxRowPos * maxColPos);
+
+            if (((maxRowPos % 2) == 0) && ((maxColPos % 2) == 0))
+            {
+                // number of pair rows & pair cols
+
+                //pathData[pathIndex(0, 0)] = Direction.Right;
+                pathData.Enqueue(Direction.Right);
+                for (int i = 0; i < maxRowPos; i += 2)
+                {
+                    for (int j = 1; j < maxColPos - 1; ++j)
+                    {
+                        //pathData[pathIndex(i, j)] = Direction.Right;
+                        pathData.Enqueue(Direction.Right);
+                    }
+                    //pathData[pathIndex(i, maxColPos - 1)] = Direction.Down;
+                    pathData.Enqueue(Direction.Down);
+
+                    for (int j = maxColPos - 1; j > 1; --j)
+                    {
+                        //pathData[pathIndex(i + 1, j)] = Direction.Left;
+                        pathData.Enqueue(Direction.Left);
+                    }
+
+                    if ((i + 1) < (maxRowPos - 1))
+                    {
+                        //pathData[pathIndex(i + 1, 1)] = Direction.Down;
+                        pathData.Enqueue(Direction.Down);
+                    }
+                }
+
+                //pathData[pathIndex(maxRowPos - 1, 1)] = Direction.Left;
+                pathData.Enqueue(Direction.Left);
+
+                for (int i = maxRowPos - 1; i > 0; --i)
+                {
+                    //pathData[pathIndex(i, 0)] = Direction.Up;
+                    pathData.Enqueue(Direction.Up);
+                }
+            }
+
+        }
+
+        private void BruteForceScanning()
+        {
+            Settings.direction = pathData.Dequeue();
+            pathData.Enqueue(Settings.direction);
+        }
+
+        private void GoHome()
+        {
+
+        }
+
         private void manualSelectPosition()
         {
             if (Input.KeyPressed(Keys.Right) && Settings.direction != Direction.Left)
@@ -410,10 +491,10 @@ namespace Snake
                 Settings.direction = Direction.Down;
         }
 
-        private bool isBodyCollision(int X, int Y)
+        private bool isSnakeCollision(int X, int Y, int start = 1)
         {
 
-            for (int j = 1; j < Snake.Count; j++)
+            for (int j = start; j < Snake.Count; j++)
             {
                 if ((X == Snake[j].X) && (Y == Snake[j].Y))
                 {
@@ -447,7 +528,7 @@ namespace Snake
                     }
 
                     //Detect collission with game borders.
-                    if (Snake[0].X < 0 || Snake[0].Y < 0 || Snake[0].X >= maxXPos || Snake[0].Y >= maxYPos)
+                    if (Snake[0].X < 0 || Snake[0].Y < 0 || Snake[0].X >= maxColPos || Snake[0].Y >= maxRowPos)
                     {
                         Die();
                     }
@@ -461,16 +542,10 @@ namespace Snake
                         }
                     }
 
-                    available[Snake[0].X, Snake[0].Y] = true;
-
                     //Detect collision with food piece
                     if (Snake[0].X == food.X && Snake[0].Y == food.Y)
                     {
                         Eat();
-                    }
-                    else
-                    {
-                        available[Snake[Snake.Count - 1].X, Snake[Snake.Count - 1].Y] = false;
                     }
                 }
                 else
@@ -506,37 +581,45 @@ namespace Snake
         private void ShowGameBoard(Graphics canvas)
         {
 
-            //for (int i = 0; i < maxXPos; ++i)
+            //Brush brush = Brushes.White;
+            //for (int i = 0; i < maxRowPos; ++i)
             //{
-            //    for (int j = 0; j < maxYPos; ++j)
+            //    for (int j = 0; j < maxColPos; ++j)
             //    {
-            //        if (available[i, j]) { 
-            //            canvas.FillEllipse(Brushes.White,
-            //                new Rectangle(  1 * Settings.Width,
-            //                                1 * Settings.Height,
-            //                                Settings.Width,
-            //                                Settings.Height));
+            //        switch (pathData[pathIndex(i, j)])
+            //        {
+            //            case Direction.Right: brush = Brushes.Black; break;
+            //            case Direction.Down: brush = Brushes.Gray; break;
+            //            case Direction.Left: brush = Brushes.White; break;
+            //            case Direction.Up: brush = Brushes.Yellow; break;
             //        }
+
+            //        canvas.FillEllipse(brush,
+            //            new Rectangle(j * Settings.Width,
+            //                            i * Settings.Height,
+            //                            Settings.Width,
+            //                            Settings.Height));
             //    }
             //}
 
-            //Draw snake
-            //for (int i = 0; i < Snake.Count; i++)
-            //{
-            //    //Draw snake
-            //    canvas.FillEllipse((i == 0) ? Brushes.Purple : Brushes.Blue,
-            //        new Rectangle(  Snake[i].X * Settings.Width,
-            //                        Snake[i].Y * Settings.Height,
-            //                        Settings.Width, 
-            //                        Settings.Height));
-            //}
             //Draw Food
+            canvas.FillEllipse(Brushes.Red,
+                new Rectangle(food.X * Settings.Width,
+                                food.Y * Settings.Height,
+                                Settings.Width,
+                                Settings.Height));
 
-            //canvas.FillEllipse(Brushes.Yellow,
-            //    new Rectangle(  food.X * Settings.Width,
-            //                    food.Y * Settings.Height,
-            //                    Settings.Width,
-            //                    Settings.Height));
+            //Draw snake
+            for (int i = 0; i < Snake.Count; i++)
+            {
+                //Draw snake
+                canvas.FillEllipse((i == 0) ? Brushes.Purple : Brushes.Blue,
+                    new Rectangle(Snake[i].X * Settings.Width,
+                                    Snake[i].Y * Settings.Height,
+                                    Settings.Width,
+                                    Settings.Height));
+            }
+
         }
 
 
@@ -545,7 +628,7 @@ namespace Snake
 
         private void pbCanvas_Paint(object sender, PaintEventArgs e)
         {
-            //ShowGameBoard(e.Graphics);
+            ShowGameBoard(e.Graphics);
             if (Settings.GameOver)
             {
                 if (!Settings.Win) { 
@@ -586,9 +669,5 @@ namespace Snake
         }
         #endregion
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }

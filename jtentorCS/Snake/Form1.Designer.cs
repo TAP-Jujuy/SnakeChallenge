@@ -51,6 +51,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pbCanvas.BackColor = System.Drawing.Color.Gray;
             this.pbCanvas.Location = new System.Drawing.Point(15, 30);
+            this.pbCanvas.MaximumSize = new System.Drawing.Size(512, 384);
+            this.pbCanvas.MinimumSize = new System.Drawing.Size(512, 384);
             this.pbCanvas.Name = "pbCanvas";
             this.pbCanvas.Size = new System.Drawing.Size(512, 384);
             this.pbCanvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -64,11 +66,12 @@
             this.lblScore.BackColor = System.Drawing.Color.Chartreuse;
             this.lblScore.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblScore.ForeColor = System.Drawing.Color.DeepPink;
-            this.lblScore.Location = new System.Drawing.Point(279, 428);
+            this.lblScore.Location = new System.Drawing.Point(310, 417);
             this.lblScore.Name = "lblScore";
             this.lblScore.Size = new System.Drawing.Size(21, 20);
             this.lblScore.TabIndex = 2;
             this.lblScore.Text = "..";
+            this.lblScore.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblGameOver
             // 
@@ -91,7 +94,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(542, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(546, 30);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -148,7 +151,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Chartreuse;
-            this.ClientSize = new System.Drawing.Size(542, 501);
+            this.ClientSize = new System.Drawing.Size(546, 485);
             this.Controls.Add(this.lblGameOver);
             this.Controls.Add(this.lblScore);
             this.Controls.Add(this.pbCanvas);
@@ -162,7 +165,6 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Snake Game | TAP - Jujuy v.2";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.pbCanvas)).EndInit();

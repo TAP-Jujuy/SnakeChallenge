@@ -21,11 +21,11 @@
 
         public Settings()
         {
-            Width = 48;
-            Height = 48;
-            Speed = 16;
+            Width = 64;
+            Height = 64;
+            Speed = 64;
             Score = 0;
-            Points = 100;
+            Points = 1;
             GameOver = false;
             Win = false;
             direction = Direction.Down;
